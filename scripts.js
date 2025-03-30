@@ -1,71 +1,60 @@
 // Importing books, authors, genres, and the constant for books per page from the external data module
 import { books, authors, genres, BOOKS_PER_PAGE } from './data.js'
 
-let page = 1; // Keeps track of the current page of book listings
-let matches = books // Holds the filtered list of books
 
-
-/*-------------------------------------Encapsulating UI Elements----------------------------------------------------------*/
-const elements = 
+class BookConnect
 {
-    //Header elements
-    headerSearchIcon: document.querySelector('[data-header-search]'),
-    headerSettingsIcon: document.querySelector('[data-header-settings]'),
+    constructor(books, authors, genres, booksPerPage)
+    {
+        this.books = books;
+        this.authors = authors;
+        this.genres = genres;
+        this.BOOKS_PER_PAGE = booksPerPage;
 
-    // Search Card elements
-    searchOverlay: document.querySelector('[data-search-overlay]'),
-    searchForm: document.querySelector('[data-search-form]'),
-    searchCancelButton: document.querySelector('[data-search-cancel]'),
-    searchTitleInput: document.querySelector('[data-search-title]'),
-    searchGenresSelect: document.querySelector('[data-search-genres]'),
-    searchAuthorsSelect: document.querySelector('[data-search-authors]'),
+        this.page = 1; // Keeps track of the current page of book listings
+        this.matches = books // Holds the filtered list of books
+        this.elements = this._initializeUIElements();
+    }
 
-    // Theme Card elements
-    settingsOverlay: document.querySelector('[data-settings-overlay]'),
-    settingsForm: document.querySelector('[data-settings-form]'),
-    settingsTheme:  document.querySelector('[data-settings-theme]'),
-    settingsCancelButton: document.querySelector('[data-settings-cancel]'),
+    _initializeUIElements() {
+        return {
+            //Header elements
+        headerSearchIcon: document.querySelector('[data-header-search]'),
+        headerSettingsIcon: document.querySelector('[data-header-settings]'),
 
-    //Summary Card elements
-    bookListItems: document.querySelector('[data-list-items]'),
-    bookListBlur: document.querySelector('[data-list-blur]'),
-    bookListImage: document.querySelector('[data-list-image]'),
-    bookListTitle: document.querySelector('[data-list-title]'),
-    bookListSubtitle: document.querySelector('[data-list-subtitle]'),
-    bookListDescription:document.querySelector('[data-list-description]'),
-    listCloseButton: document.querySelector('[data-list-close]'),
-    listActive: document.querySelector('[data-list-active]'),
+        // Search Card elements
+        searchOverlay: document.querySelector('[data-search-overlay]'),
+        searchForm: document.querySelector('[data-search-form]'),
+        searchCancelButton: document.querySelector('[data-search-cancel]'),
+        searchTitleInput: document.querySelector('[data-search-title]'),
+        searchGenresSelect: document.querySelector('[data-search-genres]'),
+        searchAuthorsSelect: document.querySelector('[data-search-authors]'),
 
-    //Show More elements
-    showListButton: document.querySelector('[data-list-button]'),
-    showListMessage: document.querySelector('[data-list-message]'),
+        // Theme Card elements
+        settingsOverlay: document.querySelector('[data-settings-overlay]'),
+        settingsForm: document.querySelector('[data-settings-form]'),
+        settingsTheme:  document.querySelector('[data-settings-theme]'),
+        settingsCancelButton: document.querySelector('[data-settings-cancel]'),
+
+        //Summary Card elements
+        bookListItems: document.querySelector('[data-list-items]'),
+        bookListBlur: document.querySelector('[data-list-blur]'),
+        bookListImage: document.querySelector('[data-list-image]'),
+        bookListTitle: document.querySelector('[data-list-title]'),
+        bookListSubtitle: document.querySelector('[data-list-subtitle]'),
+        bookListDescription:document.querySelector('[data-list-description]'),
+        listCloseButton: document.querySelector('[data-list-close]'),
+        listActive: document.querySelector('[data-list-active]'),
+
+        //Show More elements
+        showListButton: document.querySelector('[data-list-button]'),
+        showListMessage: document.querySelector('[data-list-message]'),
+        }
+    }
+
+    
+
 }
-
-// Destructuring the elements object to simplify access
-const 
-{
-    headerSearchIcon,
-    headerSettingsIcon,
-    searchOverlay,
-    searchForm,
-    settingsTheme,
-    searchCancelButton,
-    searchGenresSelect,
-    searchAuthorsSelect,
-    settingsOverlay,
-    settingsForm,
-    settingsCancelButton,
-    bookListItems,
-    bookListBlur,
-    bookListImage,
-    bookListTitle,
-    bookListSubtitle,
-    bookListDescription,
-    listCloseButton,
-    listActive,
-    showListButton,
-    showListMessage
-} = elements;
 
 
 /*--------------------------------------Populating Main Container with Books --------------------------------------------------- */
