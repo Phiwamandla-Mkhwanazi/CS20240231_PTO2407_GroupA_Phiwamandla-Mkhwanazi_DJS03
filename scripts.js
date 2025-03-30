@@ -148,18 +148,6 @@ for (const [id, name] of Object.entries(authors)) {
 searchAuthorsSelect.appendChild(authorsHtml)
 
 
-/*-----------------------------------Theme Selection Based on User Preference-------------------------------------------------------- */
-
-// Checking for dark mode preference and applying theme settings accordingly
-if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    settingsTheme.value = 'night'
-    document.documentElement.style.setProperty('--color-dark', '255, 255, 255');
-    document.documentElement.style.setProperty('--color-light', '10, 10, 20');
-} else {
-    settingsTheme.value = 'day'
-    document.documentElement.style.setProperty('--color-dark', '10, 10, 20');
-    document.documentElement.style.setProperty('--color-light', '255, 255, 255');
-}
 
 /*------------------------------------Event Listeners for UI (Cards) Interactions------------------------------------------------------- */
 
@@ -188,27 +176,6 @@ headerSettingsIcon.addEventListener('click', () => {
 listCloseButton.addEventListener('click', () => {
     listActive.open = false
 })
-
-/*--------------------------------Updating Theme (settings form/Theme Card) Based on User Selection----------------------------------------------- */
-
-// Event listener to save the Theme (settings form)  when submitted
-settingsForm.addEventListener('submit', (event) => {
-    event.preventDefault()
-    const formData = new FormData(event.target)
-    const { theme } = Object.fromEntries(formData)
-
-    // Apply selected theme settings
-    if (theme === 'night') {
-        document.documentElement.style.setProperty('--color-dark', '255, 255, 255');
-        document.documentElement.style.setProperty('--color-light', '10, 10, 20');
-    } else {
-        document.documentElement.style.setProperty('--color-dark', '10, 10, 20');
-        document.documentElement.style.setProperty('--color-light', '255, 255, 255');
-    }
-    // Close the Theme Card
-     settingsOverlay.open = false
-})
-
 
 
 /*-------------------------------------Handling Summary Card Click Event---------------------------------------------------- */
