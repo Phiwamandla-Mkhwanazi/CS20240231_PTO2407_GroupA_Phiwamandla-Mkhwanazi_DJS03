@@ -258,6 +258,12 @@ const book = {
 
 
 /*-----------------------------------------------Theme Object------------------------------------------------------------ */
+/**
+ * @namespace ThemeManager
+ * 
+ * This module handles the theme management for the web application, including applying
+ * light or dark themes based on user preference or system settings.
+ */
 const ThemeManager = {
     init() {
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -269,6 +275,11 @@ const ThemeManager = {
         }
     },
 
+      /**
+     * Applies the specified theme by adjusting CSS custom properties (variables) for dark or light modes.
+     * 
+     * @param {string} theme - The theme to apply. Can be either 'night' or 'day'.
+     */
     applyTheme(theme) {
         if (theme === 'night') {
             document.documentElement.style.setProperty('--color-dark', '255, 255, 255');
@@ -279,6 +290,13 @@ const ThemeManager = {
         }
     },
 
+     /**
+     * Handles theme change when the user selects a new theme in the settings.
+     * It updates the theme and closes the settings overlay.
+     * 
+     * @param {Event} event - The submit event triggered when the user selects a new theme.
+     * @listens submit
+     */
     handleThemeChange(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
