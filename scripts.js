@@ -52,41 +52,24 @@ class BookConnect
         }
     }
 
+    // Render the books in the UI
+    renderBooks() {
+    const starting = document.createDocumentFragment();
+    const booksToRender = this.matches.slice(0, this.BOOKS_PER_PAGE);
+
+    booksToRender.forEach(book => {
+        const bookObj = new Book(book.id, book.title, book.author, book.image, book.description, book.genres, book.published);
+        starting.appendChild(bookObj.createPreviewElement(this.authors));
+    });
+
+    this.elements.bookListItems.appendChild(starting);
+    this.updateShowMoreButton();
+}
+
     
 
 }
 
-
-/*--------------------------------------Populating Main Container with Books --------------------------------------------------- */
-
-//Creating a DocumentFragment to store book elements before adding them to the DOM
-const starting = document.createDocumentFragment()
-
-// Iterating through the first set of books (up to BOOKS_PER_PAGE) and creating UI elements
-for (const { author, id, image, title } of matches.slice(0, BOOKS_PER_PAGE)) {
-   
-    const element = document.createElement('button') // Create a new button element for each book
-    element.classList = 'preview' // Assign a class to the button for styling purposes
-    element.setAttribute('data-preview', id) // Set a custom data attribute 'data-preview' that holds the book's ID
-
-    // Set inner HTML structure for summary card 
-    element.innerHTML = `
-        <img
-            class="preview__image"
-            src="${image}"
-        />
-        
-        <div class="preview__info">
-            <h3 class="preview__title">${title}</h3>
-            <div class="preview__author">${authors[author]}</div>
-        </div>
-    `
-
-    starting.appendChild(element) // Append the created button element to the DocumentFragment
-}
-
-// Once all elements have been created, append the fragment to the DOM at the specified location
-bookListItems.appendChild(starting)
 
 
 /*------------------------------------Genre Dropdown Menu------------------------------------------------------- */
