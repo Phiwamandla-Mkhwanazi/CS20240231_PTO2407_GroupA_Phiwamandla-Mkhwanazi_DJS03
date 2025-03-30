@@ -65,7 +65,13 @@ const
 
 /*--------------------------------------------------Book Object-------------------------------------------- */
 const book = {
-    // Helper function to create a book preview element
+     /**
+     * Helper function to create a book preview element
+     * 
+     * @param {Object} book - The book object containing id, author, image, and title.
+     * @param {Object} authors - The authors data used to display the author name.
+     * @returns {HTMLElement} - A button element containing the book preview.
+     */
     createBookElement({ author, id, image, title }, authors) {
         const element = document.createElement('button');
         element.classList.add('preview');
@@ -80,7 +86,14 @@ const book = {
         return element;
     },
 
-    //Render Books to Main
+    /**
+     * Renders a list of books to the main display area.
+     * 
+     * @param {Array} books - An array of book objects to render.
+     * @param {Object} authors - The authors data used to display author names.
+     * @param {number} booksPerPage - The number of books to display per page.
+     * @returns {DocumentFragment} - A document fragment containing the rendered books.
+    */
     render(books, authors, booksPerPage) {
         const fragment = document.createDocumentFragment();
         books.slice(0, booksPerPage).forEach(book => {
@@ -89,7 +102,13 @@ const book = {
         return fragment;
     },
 
-    //Dropdown Menu Creation (Reusable for both genre and author)
+     /**
+     * Creates a dropdown menu with given options.
+     * 
+     * @param {Object} options - The options for the dropdown, key-value pairs.
+     * @param {string} firstOptionText - The text for the first option in the dropdown.
+     * @returns {DocumentFragment} - A document fragment containing the dropdown menu.
+     */
     createDropdown(options, firstOptionText) {
         const dropdownHtml = document.createDocumentFragment();
         const firstElement = document.createElement('option');
@@ -107,17 +126,36 @@ const book = {
         return dropdownHtml;
     },
 
-    //Genre Dropdown Menu
+       /**
+     * Generates a dropdown for genres.
+     * 
+     * @param {Object} genres - The genres data to populate the dropdown.
+     * @returns {DocumentFragment} - A document fragment containing the genre dropdown.
+     */
     genreDropdown(genres) {
         return this.createDropdown(genres, 'All Genres');
     },
 
-    //Author Dropdown Menu
+    /**
+     * Generates a dropdown for authors.
+     * 
+     * @param {Object} authors - The authors data to populate the dropdown.
+     * @returns {DocumentFragment} - A document fragment containing the author dropdown.
+     */
     authorDropdown(authors) {
         return this.createDropdown(authors, 'All Authors');
     },
 
-    //Search Books
+    /**
+     * Searches for books based on selected filters.
+     * 
+     * @param {Event} event - The submit event from the search form.
+     * @param {Array} books - An array of books to filter.
+     * @param {Object} authors - An object containing authors data.
+     * @param {HTMLElement} bookListItems - The container element for the book list items.
+     * @param {HTMLElement} showListMessage - The message element for "No Results" feedback.
+     * @param {HTMLElement} showListButton - The button element for showing more results.
+     */
     search(event, books, authors, bookListItems, showListMessage, showListButton) {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -151,7 +189,14 @@ const book = {
         searchOverlay.open = false;
     },
 
-    //Manage Show More Button
+      /**
+     * Updates the state of the "Show More" button.
+     * 
+     * @param {HTMLElement} showListButton - The button element for showing more books.
+     * @param {Array} matches - The filtered list of books.
+     * @param {number} page - The current page number.
+     * @param {number} booksPerPage - The number of books displayed per page.
+     */
     updateShowMoreButton(showListButton, matches, page, booksPerPage) {
         const remainingBooks = matches.length - (page * booksPerPage);
         showListButton.innerHTML = `
@@ -161,7 +206,11 @@ const book = {
         showListButton.disabled = remainingBooks <= 0;
     },
 
-    //Book Summary
+    /**
+     * Handles the click event for a book preview and displays the detailed book summary.
+     * 
+     * @param {Event} event - The click event on a book preview.
+     */
     summaryCard(event) {
         const pathArray = Array.from(event.path || event.composedPath());
         let active = null;
@@ -185,7 +234,16 @@ const book = {
         }
     },
 
-    //Show More Books
+     /**
+     * Loads more books when the "Show More" button is clicked.
+     * 
+     * @param {HTMLElement} showListButton - The button element for showing more books.
+     * @param {HTMLElement} bookListItems - The container element for the book list.
+     * @param {Array} matches - The filtered list of books.
+     * @param {number} page - The current page number.
+     * @param {number} booksPerPage - The number of books displayed per page.
+     * @param {Object} authors - The authors data used for book previews.
+     */
     ShowMore(showListButton, bookListItems, matches, page, booksPerPage, authors) {
         const fragment = document.createDocumentFragment();
         matches.slice(page * booksPerPage, (page + 1) * booksPerPage).forEach(book => {
