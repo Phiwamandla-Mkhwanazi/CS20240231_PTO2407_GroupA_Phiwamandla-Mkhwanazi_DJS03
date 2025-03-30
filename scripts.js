@@ -18,7 +18,7 @@ class BookConnect
 
     _initializeUIElements() {
         return {
-            //Header elements
+        //Header elements
         headerSearchIcon: document.querySelector('[data-header-search]'),
         headerSettingsIcon: document.querySelector('[data-header-settings]'),
 
@@ -63,11 +63,42 @@ class BookConnect
     });
 
     this.elements.bookListItems.appendChild(starting);
-    this.updateShowMoreButton();
-}
+    this.updateShowMoreButton();    
+    }
 
-    
+    // Update the "Show More" button
+    updateShowMoreButton() {
+        const remainingBooks = this.matches.length - (this.page * this.BOOKS_PER_PAGE);
+        this.elements.showListButton.innerHTML = `
+            <span>Show more</span>
+            <span class="list__remaining"> (${remainingBooks > 0 ? remainingBooks : 0})</span>
+        `;
+        this.elements.showListButton.disabled = remainingBooks <= 0;
+    }
 
+    // Handle "Show More" button click
+    handleShowMore() {
+        this.page += 1;
+        this.renderBooks();
+    }
+
+    // Handle search form submission
+    handleSearch() {
+        const formData = new FormData(this.elements.searchForm);
+        const filters = Object.fromEntries(formData);
+        const result = this.books.filter(book => {
+            let genreMatch = filters.genre === 'any' || book.genres.includes(filters.genre);
+            let titleMatch = filters.title.trim() === '' || book.title.toLowerCase().includes(filters.title.toLowerCase());
+            let authorMatch = filters.author === 'any' || book.author === filters.author;
+
+            return genreMatch && titleMatch && authorMatch;
+        });
+
+        this.matches = result;
+        this.page = 1;
+        this.renderBooks();
+        this.updateShowMoreButton();
+    }
 }
 
 
@@ -130,21 +161,6 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
     document.documentElement.style.setProperty('--color-light', '255, 255, 255');
 }
 
-
-/*------------------------------------Handling "Show More" Button------------------------------------------------------- */
-
-// Setting up the "Show More" button with remaining book count
-showListButton.innerText = `Show more (${books.length - BOOKS_PER_PAGE})`
-
-// Disable the button if there are no more books to show
-showListButton.disabled = (matches.length - (page * BOOKS_PER_PAGE)) > 0
-
-// Update the button's inner HTML with a dynamic count of remaining books to show
-showListButton.innerHTML = `
-    <span>Show more</span>
-    <span class="list__remaining"> (${(matches.length - (page * BOOKS_PER_PAGE)) > 0 ? (matches.length - (page * BOOKS_PER_PAGE)) : 0})</span>
-`
-
 /*------------------------------------Event Listeners for UI (Cards) Interactions------------------------------------------------------- */
 
 // Closes the Search Card when the cancel button is clicked
@@ -193,120 +209,6 @@ settingsForm.addEventListener('submit', (event) => {
      settingsOverlay.open = false
 })
 
-/*----------------------------------Handling Search Form Submission---------------------------------------------- */
-
-// Event listener to handle the Search (search form) submission
-searchForm.addEventListener('submit', (event) => {
-    event.preventDefault()
-    const formData = new FormData(event.target) // Get the form data from HTML
-    const filters = Object.fromEntries(formData)  // Extract filters from form data
-    const result = [] // Initialize an empty array to store matching books
-
-    // Filter books based on search criteria (title, author, genre)
-    for (const book of books) {
-        let genreMatch = filters.genre === 'any' // Default to true if 'any' is selected
-
-        // Check if the book's genres match the selected genre
-        for (const singleGenre of book.genres) {
-            if (genreMatch) break;
-            if (singleGenre === filters.genre) { genreMatch = true }
-        }
-        // Check if the book matches the filters and add it to the result array
-        if (
-            (filters.title.trim() === '' || book.title.toLowerCase().includes(filters.title.toLowerCase())) && 
-            (filters.author === 'any' || book.author === filters.author) && 
-            genreMatch
-        ) {
-            result.push(book)  // Add matching book to result array
-        }
-    }
-    // Update the main container based on search results
-    page = 1;
-    matches = result
-
-    // If no results are found, show the 'no results' message
-    if (result.length < 1) {
-        showListMessage.classList.add('list__message_show')
-    } else {
-        showListMessage.classList.remove('list__message_show')
-    }
-
-    // Clear the current items and add new filtered items to the DOM
-    bookListItems.innerHTML = ''
-    const newItems = document.createDocumentFragment() // Create a document fragment for better performance
-
-    // Loop through the filtered results and create book preview buttons
-    for (const { author, id, image, title } of result.slice(0, BOOKS_PER_PAGE)) {
-        const element = document.createElement('button') // Create a button element
-        element.classList = 'preview' // Assign CSS class   
-        element.setAttribute('data-preview', id) // Set custom attribute for preview ID
-    
-        // Set inner HTML structure for summary card
-        element.innerHTML = `
-            <img
-                class="preview__image"
-                src="${image}"
-            />
-            
-            <div class="preview__info">
-                <h3 class="preview__title">${title}</h3>
-                <div class="preview__author">${authors[author]}</div>
-            </div>
-        `
-
-        newItems.appendChild(element) //Append button to document fragment
-    }
-
-     // Append the new items to the DOM
-     bookListItems.appendChild(newItems)
-    
-    // Disable "Show more" button if there are no more items to show
-    showListButton.disabled = (matches.length - (page * BOOKS_PER_PAGE)) < 1
-    
-    // Update the "Show more" button text and remaining count
-    showListButton.innerHTML = `
-        <span>Show more</span>
-        <span class="list__remaining"> (${(matches.length - (page * BOOKS_PER_PAGE)) > 0 ? (matches.length - (page * BOOKS_PER_PAGE)) : 0})</span>
-    `
-    // Scroll the page back to the top smoothly
-    window.scrollTo({top: 0, behavior: 'smooth'});
-
-    //close the Search Card
-    searchOverlay.open = false
-})
-
-
-/*----------------------------------Handling "Show More" Button------------------------------------------------ */
-showListButton.addEventListener('click', () => {
-    const fragment = document.createDocumentFragment() // Create document fragment for performance
-
-    // Get next batch of books from the matches array
-    for (const { author, id, image, title } of matches.slice(page * BOOKS_PER_PAGE, (page + 1) * BOOKS_PER_PAGE)) {
-        const element = document.createElement('button') // Create a button element
-        element.classList = 'preview' // Assign CSS class
-        element.setAttribute('data-preview', id) // Set custom attribute for preview ID
-    
-        // Set inner HTML structure for summary card 
-        element.innerHTML = `
-            <img
-                class="preview__image"
-                src="${image}"
-            />
-            
-            <div class="preview__info">
-                <h3 class="preview__title">${title}</h3>
-                <div class="preview__author">${authors[author]}</div>
-            </div>
-        `
-
-        fragment.appendChild(element) // Append element to document fragment
-    }
-
-    // Append new batch of books to the list
-    bookListItems.appendChild(fragment)
-    // Increment page count
-    page += 1
-})
 
 
 /*-------------------------------------Handling Summary Card Click Event---------------------------------------------------- */
