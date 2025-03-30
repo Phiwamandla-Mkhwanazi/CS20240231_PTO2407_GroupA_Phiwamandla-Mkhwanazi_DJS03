@@ -4,6 +4,70 @@ import { books, authors, genres, BOOKS_PER_PAGE } from './data.js'
 let page = 1; // Keeps track of the current page of book listings
 let matches = books // Holds the filtered list of books
 
+
+/*-------------------------------------Encapsulating UI Elements----------------------------------------------------------*/
+const elements = 
+{
+    //Header elements
+    headerSearchIcon: document.querySelector('[data-header-search]'),
+    headerSettingsIcon: document.querySelector('[data-header-settings]'),
+
+    // Search Card elements
+    searchOverlay: document.querySelector('[data-search-overlay]'),
+    searchForm: document.querySelector('[data-search-form]'),
+    searchCancelButton: document.querySelector('[data-search-cancel]'),
+    searchTitleInput: document.querySelector('[data-search-title]'),
+    searchGenresSelect: document.querySelector('[data-search-genres]'),
+    searchAuthorsSelect: document.querySelector('[data-search-authors]'),
+
+    // Theme Card elements
+    settingsOverlay: document.querySelector('[data-settings-overlay]'),
+    settingsForm: document.querySelector('[data-settings-form]'),
+    settingsTheme:  document.querySelector('[data-settings-theme]'),
+    settingsCancelButton: document.querySelector('[data-settings-cancel]'),
+
+    //Summary Card elements
+    bookListItems: document.querySelector('[data-list-items]'),
+    bookListBlur: document.querySelector('[data-list-blur]'),
+    bookListImage: document.querySelector('[data-list-image]'),
+    bookListTitle: document.querySelector('[data-list-title]'),
+    bookListSubtitle: document.querySelector('[data-list-subtitle]'),
+    bookListDescription:document.querySelector('[data-list-description]'),
+    listCloseButton: document.querySelector('[data-list-close]'),
+    listActive: document.querySelector('[data-list-active]'),
+
+    //Show More elements
+    showListButton: document.querySelector('[data-list-button]'),
+    showListMessage: document.querySelector('[data-list-message]'),
+}
+
+// Destructuring the elements object to simplify access
+const 
+{
+    headerSearchIcon,
+    headerSettingsIcon,
+    searchOverlay,
+    searchForm,
+    settingsTheme,
+    searchCancelButton,
+    searchGenresSelect,
+    searchAuthorsSelect,
+    settingsOverlay,
+    settingsForm,
+    settingsCancelButton,
+    bookListItems,
+    bookListBlur,
+    bookListImage,
+    bookListTitle,
+    bookListSubtitle,
+    bookListDescription,
+    listCloseButton,
+    listActive,
+    showListButton,
+    showListMessage
+} = elements;
+
+
 /*--------------------------------------Populating Main Container with Books --------------------------------------------------- */
 
 //Creating a DocumentFragment to store book elements before adding them to the DOM
@@ -33,7 +97,7 @@ for (const { author, id, image, title } of matches.slice(0, BOOKS_PER_PAGE)) {
 }
 
 // Once all elements have been created, append the fragment to the DOM at the specified location
-document.querySelector('[data-list-items]').appendChild(starting)
+bookListItems.appendChild(starting)
 
 
 /*------------------------------------Genre Dropdown Menu------------------------------------------------------- */
@@ -55,7 +119,7 @@ for (const [id, name] of Object.entries(genres)) {
     genreHtml.appendChild(element)
 }
 // Append the genres options to the dropdown in the DOM
-document.querySelector('[data-search-genres]').appendChild(genreHtml)
+searchGenresSelect.appendChild(genreHtml)
 
 
 /*---------------------------------Author Dropdown Menu---------------------------------------------------------- */
@@ -78,18 +142,18 @@ for (const [id, name] of Object.entries(authors)) {
 }
 
 // Append the authors options to the dropdown in the DOM
-document.querySelector('[data-search-authors]').appendChild(authorsHtml)
+searchAuthorsSelect.appendChild(authorsHtml)
 
 
 /*-----------------------------------Theme Selection Based on User Preference-------------------------------------------------------- */
 
 // Checking for dark mode preference and applying theme settings accordingly
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.querySelector('[data-settings-theme]').value = 'night'
+    settingsTheme.value = 'night'
     document.documentElement.style.setProperty('--color-dark', '255, 255, 255');
     document.documentElement.style.setProperty('--color-light', '10, 10, 20');
 } else {
-    document.querySelector('[data-settings-theme]').value = 'day'
+    settingsTheme.value = 'day'
     document.documentElement.style.setProperty('--color-dark', '10, 10, 20');
     document.documentElement.style.setProperty('--color-light', '255, 255, 255');
 }
@@ -98,13 +162,13 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
 /*------------------------------------Handling "Show More" Button------------------------------------------------------- */
 
 // Setting up the "Show More" button with remaining book count
-document.querySelector('[data-list-button]').innerText = `Show more (${books.length - BOOKS_PER_PAGE})`
+showListButton.innerText = `Show more (${books.length - BOOKS_PER_PAGE})`
 
 // Disable the button if there are no more books to show
-document.querySelector('[data-list-button]').disabled = (matches.length - (page * BOOKS_PER_PAGE)) > 0
+showListButton.disabled = (matches.length - (page * BOOKS_PER_PAGE)) > 0
 
 // Update the button's inner HTML with a dynamic count of remaining books to show
-document.querySelector('[data-list-button]').innerHTML = `
+showListButton.innerHTML = `
     <span>Show more</span>
     <span class="list__remaining"> (${(matches.length - (page * BOOKS_PER_PAGE)) > 0 ? (matches.length - (page * BOOKS_PER_PAGE)) : 0})</span>
 `
@@ -112,35 +176,35 @@ document.querySelector('[data-list-button]').innerHTML = `
 /*------------------------------------Event Listeners for UI (Cards) Interactions------------------------------------------------------- */
 
 // Closes the Search Card when the cancel button is clicked
-document.querySelector('[data-search-cancel]').addEventListener('click', () => {
-    document.querySelector('[data-search-overlay]').open = false
+searchCancelButton.addEventListener('click', () => {
+    searchOverlay.open = false
 })
 
 // Closes the Settings Card when the cancel button is clicked
-document.querySelector('[data-settings-cancel]').addEventListener('click', () => {
-    document.querySelector('[data-settings-overlay]').open = false
+settingsCancelButton.addEventListener('click', () => {
+    settingsOverlay.open = false
 })
 
 // Opens the Search Card and sets focus on the search 'input field'
-document.querySelector('[data-header-search]').addEventListener('click', () => {
-    document.querySelector('[data-search-overlay]').open = true 
-    document.querySelector('[data-search-title]').focus()
+headerSearchIcon.addEventListener('click', () => {
+    searchOverlay.open = true 
+    searchTitleInput.focus()
 })
 
 //Opens the Settings Card when the settings button is clicked
-document.querySelector('[data-header-settings]').addEventListener('click', () => {
-    document.querySelector('[data-settings-overlay]').open = true 
+headerSettingsIcon.addEventListener('click', () => {
+    settingsOverlay.open = true 
 })
 
 // Closes the Summary Card when the close button is clicked
-document.querySelector('[data-list-close]').addEventListener('click', () => {
-    document.querySelector('[data-list-active]').open = false
+listCloseButton.addEventListener('click', () => {
+    listActive.open = false
 })
 
 /*--------------------------------Updating Theme (settings form/Theme Card) Based on User Selection----------------------------------------------- */
 
 // Event listener to save the Theme (settings form)  when submitted
-document.querySelector('[data-settings-form]').addEventListener('submit', (event) => {
+settingsForm.addEventListener('submit', (event) => {
     event.preventDefault()
     const formData = new FormData(event.target)
     const { theme } = Object.fromEntries(formData)
@@ -154,13 +218,13 @@ document.querySelector('[data-settings-form]').addEventListener('submit', (event
         document.documentElement.style.setProperty('--color-light', '255, 255, 255');
     }
     // Close the Theme Card
-    document.querySelector('[data-settings-overlay]').open = false
+     settingsOverlay.open = false
 })
 
 /*----------------------------------Handling Search Form Submission---------------------------------------------- */
 
 // Event listener to handle the Search (search form) submission
-document.querySelector('[data-search-form]').addEventListener('submit', (event) => {
+searchForm.addEventListener('submit', (event) => {
     event.preventDefault()
     const formData = new FormData(event.target) // Get the form data from HTML
     const filters = Object.fromEntries(formData)  // Extract filters from form data
@@ -190,13 +254,13 @@ document.querySelector('[data-search-form]').addEventListener('submit', (event) 
 
     // If no results are found, show the 'no results' message
     if (result.length < 1) {
-        document.querySelector('[data-list-message]').classList.add('list__message_show')
+        showListMessage.classList.add('list__message_show')
     } else {
-        document.querySelector('[data-list-message]').classList.remove('list__message_show')
+        showListMessage.classList.remove('list__message_show')
     }
 
     // Clear the current items and add new filtered items to the DOM
-    document.querySelector('[data-list-items]').innerHTML = ''
+    bookListItems.innerHTML = ''
     const newItems = document.createDocumentFragment() // Create a document fragment for better performance
 
     // Loop through the filtered results and create book preview buttons
@@ -222,13 +286,13 @@ document.querySelector('[data-search-form]').addEventListener('submit', (event) 
     }
 
      // Append the new items to the DOM
-    document.querySelector('[data-list-items]').appendChild(newItems)
+     bookListItems.appendChild(newItems)
     
     // Disable "Show more" button if there are no more items to show
-    document.querySelector('[data-list-button]').disabled = (matches.length - (page * BOOKS_PER_PAGE)) < 1
+    showListButton.disabled = (matches.length - (page * BOOKS_PER_PAGE)) < 1
     
     // Update the "Show more" button text and remaining count
-    document.querySelector('[data-list-button]').innerHTML = `
+    showListButton.innerHTML = `
         <span>Show more</span>
         <span class="list__remaining"> (${(matches.length - (page * BOOKS_PER_PAGE)) > 0 ? (matches.length - (page * BOOKS_PER_PAGE)) : 0})</span>
     `
@@ -236,12 +300,12 @@ document.querySelector('[data-search-form]').addEventListener('submit', (event) 
     window.scrollTo({top: 0, behavior: 'smooth'});
 
     //close the Search Card
-    document.querySelector('[data-search-overlay]').open = false
+    searchOverlay.open = false
 })
 
 
 /*----------------------------------Handling "Show More" Button------------------------------------------------ */
-document.querySelector('[data-list-button]').addEventListener('click', () => {
+showListButton.addEventListener('click', () => {
     const fragment = document.createDocumentFragment() // Create document fragment for performance
 
     // Get next batch of books from the matches array
@@ -267,14 +331,14 @@ document.querySelector('[data-list-button]').addEventListener('click', () => {
     }
 
     // Append new batch of books to the list
-    document.querySelector('[data-list-items]').appendChild(fragment)
+    bookListItems.appendChild(fragment)
     // Increment page count
     page += 1
 })
 
 
 /*-------------------------------------Handling Summary Card Click Event---------------------------------------------------- */
-document.querySelector('[data-list-items]').addEventListener('click', (event) => {
+bookListItems.addEventListener('click', (event) => {
     const pathArray = Array.from(event.path || event.composedPath()) // Get event path for cross-browser compatibility
     let active = null // Initialize variable to store active book details
 
@@ -298,11 +362,11 @@ document.querySelector('[data-list-items]').addEventListener('click', (event) =>
         
     // If a book is found, update the book preview modal
     if (active) {
-        document.querySelector('[data-list-active]').open = true // Open modal
-        document.querySelector('[data-list-blur]').src = active.image // Set book image (blurred)
-        document.querySelector('[data-list-image]').src = active.image // Set book image
-        document.querySelector('[data-list-title]').innerText = active.title  // Set book title
-        document.querySelector('[data-list-subtitle]').innerText = `${authors[active.author]} (${new Date(active.published).getFullYear()})` // Set book author and published year
-        document.querySelector('[data-list-description]').innerText = active.description // Set book description
+        listActive.open = true // Open modal
+        bookListBlur.src = active.image // Set book image (blurred)
+        bookListImage.src = active.image // Set book image
+        bookListTitle.innerText = active.title  // Set book title
+        bookListSubtitle.innerText = `${authors[active.author]} (${new Date(active.published).getFullYear()})` // Set book author and published year
+        bookListDescription.innerText = active.description // Set book description
     }
 })
